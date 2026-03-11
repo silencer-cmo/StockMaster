@@ -4,10 +4,11 @@ spring:
   profiles:
     active: dev
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/stockmaster?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
-    username: root
-    password: password
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:db/stockmaster.db
+    # SQLite 不需要用户名密码
+    username: 
+    password: 
   jpa:
     hibernate:
       ddl-auto: update
@@ -15,15 +16,12 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
+        dialect: org.hibernate.dialect.SQLiteDialect
   cache:
-    type: redis
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      password: 
-      database: 0
+    type: simple
+  sql:
+    init:
+      mode: always
 
 server:
   port: 8080
