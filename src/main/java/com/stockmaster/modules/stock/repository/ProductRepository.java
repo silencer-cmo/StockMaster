@@ -14,7 +14,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Page<Product> findByCategory(String category, Pageable pageable);
     Page<Product> findByStatus(StockStatus status, Pageable pageable);
     List<Product> findByStatusIn(List<StockStatus> statusList);
-    List<Product> findByQuantityLessThanEqual(Integer minStock);
-    List<Product> findByQuantityGreaterThanEqual(Integer maxStock);
+
     Boolean existsByProductCode(String productCode);
 }

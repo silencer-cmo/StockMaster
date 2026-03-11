@@ -2,6 +2,7 @@ package com.stockmaster.modules.stock.service.impl;
 
 import com.stockmaster.modules.stock.entity.Product;
 import com.stockmaster.modules.stock.repository.ProductRepository;
+import com.stockmaster.modules.stock.repository.InventoryRepository;
 import com.stockmaster.modules.stock.service.ProductService;
 import com.stockmaster.common.enums.StockStatus;
 import org.springframework.data.domain.Page;
@@ -14,9 +15,11 @@ import java.util.List;
 @Transactional
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
+    private final InventoryRepository inventoryRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, InventoryRepository inventoryRepository) {
         this.productRepository = productRepository;
+        this.inventoryRepository = inventoryRepository;
     }
 
     @Override
@@ -60,12 +63,14 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getLowStockProducts() {
-        return productRepository.findByQuantityLessThanEqual(10);
+        List<Long> productIds = inventoryRepository.findProductIdsWithTotalQuantityLessThanEqual(10);
+        return productRepository.findAllById(productIds);
     }
 
     @Override
     public List<Product> getOverStockProducts() {
-        return productRepository.findByQuantityGreaterThanEqual(1000);
+        List<Long> productIds = inventoryRepository.findProductIdsWithTotalQuantityGreaterThanEqual(1000);
+        return productRepository.findAllById(productIds);
     }
 
     @Override
