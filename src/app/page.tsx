@@ -1,83 +1,80 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import ProductManagement from './products/page'
+import InventoryManagement from './inventory/page'
+import WarehouseManagement from './warehouses/page'
+import Dashboard from './dashboard/page'
+
+type TabType = 'dashboard' | 'products' | 'inventory' | 'warehouses'
+
 export default function Home() {
+  const [activeTab, setActiveTab] = useState<TabType>('dashboard')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
   return (
-    <main style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem'
-    }}>
-      <div style={{
-        background: 'white',
-        borderRadius: '16px',
-        padding: '3rem',
-        boxShadow: '0 10px 40px rgba(0,0,0,0.1)',
-        maxWidth: '600px',
-        width: '100%',
-        textAlign: 'center'
+    <div style={{ minHeight: '100vh', background: '#f1f5f9' }}>
+      {/* 顶部导航 */}
+      <header style={{
+        background: 'linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%)',
+        padding: '1rem 2rem',
+        boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
       }}>
-        <h1 style={{
-          fontSize: '2.5rem',
-          fontWeight: 700,
-          marginBottom: '1rem',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent'
-        }}>
-          StockMaster
-        </h1>
-        <p style={{
-          fontSize: '1.2rem',
-          color: '#64748b',
-          marginBottom: '2rem'
-        }}>
-          企业级库存管理系统
-        </p>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '1rem',
-          marginTop: '2rem'
-        }}>
-          <FeatureCard title="库存管理" description="实时库存查询与更新" />
-          <FeatureCard title="智能预警" description="自动补货提醒" />
-          <FeatureCard title="数据分析" description="销量趋势预测" />
-          <FeatureCard title="多仓库" description="统一库存调度" />
+        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <h1 style={{ color: 'white', fontSize: '1.5rem', fontWeight: 700 }}>
+            📦 StockMaster
+          </h1>
+          <nav style={{ display: 'flex', gap: '0.5rem' }}>
+            <NavButton active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')}>
+              📊 仪表盘
+            </NavButton>
+            <NavButton active={activeTab === 'products'} onClick={() => setActiveTab('products')}>
+              🏷️ 产品管理
+            </NavButton>
+            <NavButton active={activeTab === 'inventory'} onClick={() => setActiveTab('inventory')}>
+              📦 库存管理
+            </NavButton>
+            <NavButton active={activeTab === 'warehouses'} onClick={() => setActiveTab('warehouses')}>
+              🏭 仓库管理
+            </NavButton>
+          </nav>
         </div>
-        <p style={{
-          marginTop: '2rem',
-          padding: '1rem',
-          background: '#f0fdf4',
-          borderRadius: '8px',
-          color: '#15803d',
-          fontSize: '0.9rem'
-        }}>
-          ✅ 系统已成功部署，数据库配置正常！
-        </p>
-      </div>
-    </main>
+      </header>
+
+      {/* 主内容区 */}
+      <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
+        {activeTab === 'dashboard' && <Dashboard />}
+        {activeTab === 'products' && <ProductManagement />}
+        {activeTab === 'inventory' && <InventoryManagement />}
+        {activeTab === 'warehouses' && <WarehouseManagement />}
+      </main>
+    </div>
   )
 }
 
-function FeatureCard({ title, description }: { title: string; description: string }) {
+function NavButton({ children, active, onClick }: { children: React.ReactNode; active: boolean; onClick: () => void }) {
   return (
-    <div style={{
-      padding: '1rem',
-      background: '#f8fafc',
-      borderRadius: '8px',
-      border: '1px solid #e2e8f0'
-    }}>
-      <h3 style={{
-        fontSize: '1rem',
-        fontWeight: 600,
-        marginBottom: '0.5rem',
-        color: '#1e293b'
-      }}>{title}</h3>
-      <p style={{
-        fontSize: '0.875rem',
-        color: '#64748b'
-      }}>{description}</p>
-    </div>
+    <button
+      onClick={onClick}
+      style={{
+        padding: '0.5rem 1rem',
+        background: active ? 'rgba(255,255,255,0.2)' : 'transparent',
+        color: 'white',
+        border: 'none',
+        borderRadius: '8px',
+        cursor: 'pointer',
+        fontSize: '0.9rem',
+        fontWeight: active ? 600 : 400,
+        transition: 'all 0.2s'
+      }}
+    >
+      {children}
+    </button>
   )
 }
