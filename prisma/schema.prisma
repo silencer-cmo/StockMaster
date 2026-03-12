@@ -1,0 +1,122 @@
+// Prisma Schema for StockMaster
+// 数据库模型定义文件
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../db/custom.db"
+}
+
+// 用户模型
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("user") // admin, manager, user
+  status    String   @default("active") // active, inactive
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联
+  stockOperations StockOperation[]
+  logs            LogOperation[]
+
+  @@map("users")
+}
+
+// 产品模型
+model Product {
+  id          String   @id @default(cuid())
+  sku         String   @unique
+  name        String
+  description String?
+  category    String?
+  unit        String   @default("件")
+  price       Float    @default(0)
+  status      String   @default("active") // active, inactive
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联
+  inventory       Inventory[]
+  stockOperations StockOperation[]
+
+  @@map("products")
+}
+
+// 仓库模型
+model Warehouse {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  name      String
+  address   String?
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 关联
+  inventory Inventory[]
+
+  @@map("warehouses")
+}
+
+// 库存模型
+model Inventory {
+  id          String   @id @default(cuid())
+  productId   String
+  warehouseId String
+  quantity    Int      @default(0)
+  minQuantity Int      @default(0)
+  maxQuantity Int?
+  status      String   @default("normal") // normal, low, overstock
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // 关联
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  warehouse Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, warehouseId])
+  @@map("inventory")
+}
+
+// 库存操作记录
+model StockOperation {
+  id            String   @id @default(cuid())
+  productId     String
+  type          String   // in, out, transfer, adjust
+  quantity      Int
+  fromWarehouse String?
+  toWarehouse   String?
+  operatorId    String
+  remark        String?
+  createdAt     DateTime @default(now())
+
+  // 关联
+  product  Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  operator User    @relation(fields: [operatorId], references: [id])
+
+  @@map("stock_operations")
+}
+
+// 操作日志
+model LogOperation {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  module    String
+  targetId  String?
+  detail    String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  // 关联
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("log_operations")
+}
