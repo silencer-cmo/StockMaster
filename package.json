@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "scripts": {
+    "predev": "node -e \"if(!require('fs').existsSync('node_modules')){console.error('\\x1b[31m❌ 错误: 依赖未安装！\\x1b[0m');console.error('\\x1b[33m请先运行: bun install\\x1b[0m');process.exit(1);}else{console.log('\\x1b[32m✓ 依赖检查通过\\x1b[0m');}\"",
     "dev": "next dev -p 3000",
     "build": "next build",
     "postbuild": "node -e \"const fs=require('fs'); const path=require('path'); const staticDir=path.join('.next','static'); const standaloneDir=path.join('.next','standalone','.next'); const publicDir='public'; const standalonePublic=path.join('.next','standalone','public'); if(fs.existsSync(standaloneDir)){fs.cpSync(staticDir,path.join(standaloneDir,'static'),{recursive:true});} if(fs.existsSync('.next','standalone')){fs.cpSync(publicDir,standalonePublic,{recursive:true});}\"",
