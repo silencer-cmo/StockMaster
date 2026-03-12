@@ -26,7 +26,12 @@ interface Warehouse {
   code: string
 }
 
-export default function InventoryManagement() {
+interface InventoryManagementProps {
+  openAddForm?: boolean
+  onFormOpened?: () => void
+}
+
+export default function InventoryManagement({ openAddForm, onFormOpened }: InventoryManagementProps) {
   const [inventory, setInventory] = useState<Inventory[]>([])
   const [products, setProducts] = useState<Product[]>([])
   const [warehouses, setWarehouses] = useState<Warehouse[]>([])
@@ -43,6 +48,17 @@ export default function InventoryManagement() {
   useEffect(() => {
     fetchData()
   }, [])
+
+  // 处理从快捷操作传来的打开表单请求
+  useEffect(() => {
+    if (openAddForm && !showForm) {
+      setShowForm(true)
+      setFormData({ productId: '', warehouseId: '', quantity: 0, minQuantity: 0, maxQuantity: 0 })
+      if (onFormOpened) {
+        onFormOpened()
+      }
+    }
+  }, [openAddForm, onFormOpened, showForm])
 
   const fetchData = async () => {
     try {

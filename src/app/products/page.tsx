@@ -13,7 +13,12 @@ interface Product {
   status: string
 }
 
-export default function ProductManagement() {
+interface ProductManagementProps {
+  openAddForm?: boolean
+  onFormOpened?: () => void
+}
+
+export default function ProductManagement({ openAddForm, onFormOpened }: ProductManagementProps) {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -30,6 +35,18 @@ export default function ProductManagement() {
   useEffect(() => {
     fetchProducts()
   }, [])
+
+  // 处理从快捷操作传来的打开表单请求
+  useEffect(() => {
+    if (openAddForm && !showForm) {
+      setShowForm(true)
+      setEditingProduct(null)
+      setFormData({ sku: '', name: '', description: '', category: '', unit: '件', price: 0 })
+      if (onFormOpened) {
+        onFormOpened()
+      }
+    }
+  }, [openAddForm, onFormOpened, showForm])
 
   const fetchProducts = async () => {
     try {

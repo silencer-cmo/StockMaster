@@ -10,6 +10,7 @@ type TabType = 'dashboard' | 'products' | 'inventory' | 'warehouses'
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>('dashboard')
+  const [quickAction, setQuickAction] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -17,6 +18,19 @@ export default function Home() {
   }, [])
 
   if (!mounted) return null
+
+  const handleQuickAction = (action: string) => {
+    setQuickAction(action)
+    if (action === 'addProduct') {
+      setActiveTab('products')
+    } else if (action === 'stockIn' || action === 'stockOut' || action === 'inventory') {
+      setActiveTab('inventory')
+    }
+  }
+
+  const clearQuickAction = () => {
+    setQuickAction(null)
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: '#f1f5f9' }}>
@@ -31,16 +45,16 @@ export default function Home() {
             📦 StockMaster
           </h1>
           <nav style={{ display: 'flex', gap: '0.5rem' }}>
-            <NavButton active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')}>
+            <NavButton active={activeTab === 'dashboard'} onClick={() => { setActiveTab('dashboard'); clearQuickAction(); }}>
               📊 仪表盘
             </NavButton>
-            <NavButton active={activeTab === 'products'} onClick={() => setActiveTab('products')}>
+            <NavButton active={activeTab === 'products'} onClick={() => { setActiveTab('products'); clearQuickAction(); }}>
               🏷️ 产品管理
             </NavButton>
-            <NavButton active={activeTab === 'inventory'} onClick={() => setActiveTab('inventory')}>
+            <NavButton active={activeTab === 'inventory'} onClick={() => { setActiveTab('inventory'); clearQuickAction(); }}>
               📦 库存管理
             </NavButton>
-            <NavButton active={activeTab === 'warehouses'} onClick={() => setActiveTab('warehouses')}>
+            <NavButton active={activeTab === 'warehouses'} onClick={() => { setActiveTab('warehouses'); clearQuickAction(); }}>
               🏭 仓库管理
             </NavButton>
           </nav>
@@ -49,9 +63,24 @@ export default function Home() {
 
       {/* 主内容区 */}
       <main style={{ maxWidth: '1400px', margin: '0 auto', padding: '2rem' }}>
-        {activeTab === 'dashboard' && <Dashboard />}
-        {activeTab === 'products' && <ProductManagement />}
-        {activeTab === 'inventory' && <InventoryManagement />}
+        {activeTab === 'dashboard' && (
+          <Dashboard 
+            onNavigate={(tab) => { setActiveTab(tab); clearQuickAction(); }}
+            onQuickAction={handleQuickAction}
+          />
+        )}
+        {activeTab === 'products' && (
+          <ProductManagement 
+            openAddForm={quickAction === 'addProduct'} 
+            onFormOpened={clearQuickAction}
+          />
+        )}
+        {activeTab === 'inventory' && (
+          <InventoryManagement 
+            openAddForm={quickAction === 'stockIn' || quickAction === 'stockOut'}
+            onFormOpened={clearQuickAction}
+          />
+        )}
         {activeTab === 'warehouses' && <WarehouseManagement />}
       </main>
     </div>
