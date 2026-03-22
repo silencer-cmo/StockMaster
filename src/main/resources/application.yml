@@ -1,29 +1,19 @@
 spring:
   application:
     name: StockMaster
-  profiles:
-    active: dev
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/stockmaster?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://localhost:3306/stockmaster?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: root
     password: password
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
-  cache:
-    type: redis
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      password: 
-      database: 0
 
 server:
   port: 8080
@@ -35,21 +25,18 @@ server:
       force: true
 
 jwt:
-  secret: StockMaster2026@SecurityKey
+  secret: StockMaster2026@SecurityKeyForJWTTokenGeneration
   expiration: 86400000
   refresh-expiration: 604800000
 
 logging:
   level:
-    com.stockmaster: DEBUG
-    org.springframework.security: DEBUG
+    com.stockmaster: INFO
+    org.springframework.security: WARN
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/stockmaster.log
-    max-size: 100MB
-    max-history: 30
 
 management:
   endpoints:
